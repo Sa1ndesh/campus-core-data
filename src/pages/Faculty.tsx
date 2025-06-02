@@ -1,14 +1,18 @@
-
 import { useState } from 'react';
 import { Search, Plus, Edit, Trash2, UserCheck, Mail, Phone, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { faculty, departments } from '../data/mockData';
+import { faculty as initialFaculty, departments } from '../data/mockData';
 import { Faculty } from '../types/database';
+import FacultyForm from '../components/FacultyForm';
+import { useToast } from '@/hooks/use-toast';
 
 const FacultyPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredFaculty, setFilteredFaculty] = useState(faculty);
+  const [faculty, setFaculty] = useState(initialFaculty);
+  const [filteredFaculty, setFilteredFaculty] = useState(initialFaculty);
+  const [showForm, setShowForm] = useState(false);
+  const { toast } = useToast();
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
@@ -19,6 +23,23 @@ const FacultyPage = () => {
       member.specialization.toLowerCase().includes(term.toLowerCase())
     );
     setFilteredFaculty(filtered);
+  };
+
+  const handleAddFaculty = (facultyData: Omit<Faculty, 'id'>) => {
+    const newFaculty: Faculty = {
+      ...facultyData,
+      id: (faculty.length + 1).toString()
+    };
+    
+    const updatedFaculty = [...faculty, newFaculty];
+    setFaculty(updatedFaculty);
+    setFilteredFaculty(updatedFaculty);
+    setShowForm(false);
+    
+    toast({
+      title: "Faculty Added",
+      description: `${newFaculty.firstName} ${newFaculty.lastName} has been added successfully.`,
+    });
   };
 
   const getDepartmentName = (departmentId: string) => {
@@ -47,7 +68,7 @@ const FacultyPage = () => {
           </h1>
           <p className="text-gray-600 mt-1">Manage faculty members and their information</p>
         </div>
-        <Button className="mt-4 sm:mt-0">
+        <Button className="mt-4 sm:mt-0" onClick={() => setShowForm(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Add Faculty
         </Button>
@@ -145,6 +166,14 @@ const FacultyPage = () => {
           <h3 className="text-lg font-medium text-gray-900 mb-2">No faculty found</h3>
           <p className="text-gray-600">Try adjusting your search criteria</p>
         </div>
+      )}
+
+      {/* Faculty Form Modal */}
+      {showForm && (
+        <FacultyForm
+          onSubmit={handleAddFaculty}
+          onCancel={() => setShowForm(false)}
+        />
       )}
     </div>
   );

@@ -1,13 +1,18 @@
-
 import { useState } from 'react';
 import { Search, Plus, Edit, Trash2, BookOpen, Clock, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { courses, departments, faculty } from '../data/mockData';
+import { courses as initialCourses, departments, faculty } from '../data/mockData';
+import { Course } from '../types/database';
+import CourseForm from '../components/CourseForm';
+import { useToast } from '@/hooks/use-toast';
 
 const Courses = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredCourses, setFilteredCourses] = useState(courses);
+  const [courses, setCourses] = useState(initialCourses);
+  const [filteredCourses, setFilteredCourses] = useState(initialCourses);
+  const [showForm, setShowForm] = useState(false);
+  const { toast } = useToast();
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
@@ -17,6 +22,23 @@ const Courses = () => {
       course.description.toLowerCase().includes(term.toLowerCase())
     );
     setFilteredCourses(filtered);
+  };
+
+  const handleAddCourse = (courseData: Omit<Course, 'id'>) => {
+    const newCourse: Course = {
+      ...courseData,
+      id: (courses.length + 1).toString()
+    };
+    
+    const updatedCourses = [...courses, newCourse];
+    setCourses(updatedCourses);
+    setFilteredCourses(updatedCourses);
+    setShowForm(false);
+    
+    toast({
+      title: "Course Added",
+      description: `${newCourse.code} - ${newCourse.name} has been added successfully.`,
+    });
   };
 
   const getDepartmentName = (departmentId: string) => {
@@ -44,7 +66,7 @@ const Courses = () => {
           </h1>
           <p className="text-gray-600 mt-1">Manage course catalog and schedules</p>
         </div>
-        <Button className="mt-4 sm:mt-0">
+        <Button className="mt-4 sm:mt-0" onClick={() => setShowForm(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Add Course
         </Button>
@@ -169,6 +191,14 @@ const Courses = () => {
           <h3 className="text-lg font-medium text-gray-900 mb-2">No courses found</h3>
           <p className="text-gray-600">Try adjusting your search criteria</p>
         </div>
+      )}
+
+      {/* Course Form Modal */}
+      {showForm && (
+        <CourseForm
+          onSubmit={handleAddCourse}
+          onCancel={() => setShowForm(false)}
+        />
       )}
     </div>
   );

@@ -1,13 +1,18 @@
-
 import { useState } from 'react';
 import { Search, Plus, Edit, Trash2, Building2, Users, GraduationCap, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { departments, faculty } from '../data/mockData';
+import { departments as initialDepartments, faculty } from '../data/mockData';
+import { Department } from '../types/database';
+import DepartmentForm from '../components/DepartmentForm';
+import { useToast } from '@/hooks/use-toast';
 
 const Departments = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredDepartments, setFilteredDepartments] = useState(departments);
+  const [departments, setDepartments] = useState(initialDepartments);
+  const [filteredDepartments, setFilteredDepartments] = useState(initialDepartments);
+  const [showForm, setShowForm] = useState(false);
+  const { toast } = useToast();
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
@@ -17,6 +22,23 @@ const Departments = () => {
       dept.description.toLowerCase().includes(term.toLowerCase())
     );
     setFilteredDepartments(filtered);
+  };
+
+  const handleAddDepartment = (departmentData: Omit<Department, 'id'>) => {
+    const newDepartment: Department = {
+      ...departmentData,
+      id: (departments.length + 1).toString()
+    };
+    
+    const updatedDepartments = [...departments, newDepartment];
+    setDepartments(updatedDepartments);
+    setFilteredDepartments(updatedDepartments);
+    setShowForm(false);
+    
+    toast({
+      title: "Department Added",
+      description: `${newDepartment.name} has been added successfully.`,
+    });
   };
 
   const getDepartmentHead = (headId?: string) => {
@@ -36,7 +58,7 @@ const Departments = () => {
           </h1>
           <p className="text-gray-600 mt-1">Manage academic departments and their information</p>
         </div>
-        <Button className="mt-4 sm:mt-0">
+        <Button className="mt-4 sm:mt-0" onClick={() => setShowForm(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Add Department
         </Button>
@@ -150,6 +172,14 @@ const Departments = () => {
           <h3 className="text-lg font-medium text-gray-900 mb-2">No departments found</h3>
           <p className="text-gray-600">Try adjusting your search criteria</p>
         </div>
+      )}
+
+      {/* Department Form Modal */}
+      {showForm && (
+        <DepartmentForm
+          onSubmit={handleAddDepartment}
+          onCancel={() => setShowForm(false)}
+        />
       )}
     </div>
   );
