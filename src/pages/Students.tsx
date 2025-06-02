@@ -3,12 +3,17 @@ import { useState } from 'react';
 import { Search, Plus, Edit, Trash2, GraduationCap, Mail, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { students, departments } from '../data/mockData';
+import { students as initialStudents, departments } from '../data/mockData';
 import { Student } from '../types/database';
+import StudentForm from '../components/StudentForm';
+import { useToast } from '@/hooks/use-toast';
 
 const Students = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredStudents, setFilteredStudents] = useState(students);
+  const [students, setStudents] = useState(initialStudents);
+  const [filteredStudents, setFilteredStudents] = useState(initialStudents);
+  const [showForm, setShowForm] = useState(false);
+  const { toast } = useToast();
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
@@ -18,6 +23,23 @@ const Students = () => {
       student.email.toLowerCase().includes(term.toLowerCase())
     );
     setFilteredStudents(filtered);
+  };
+
+  const handleAddStudent = (studentData: Omit<Student, 'id'>) => {
+    const newStudent: Student = {
+      ...studentData,
+      id: (students.length + 1).toString()
+    };
+    
+    const updatedStudents = [...students, newStudent];
+    setStudents(updatedStudents);
+    setFilteredStudents(updatedStudents);
+    setShowForm(false);
+    
+    toast({
+      title: "Student Added",
+      description: `${newStudent.firstName} ${newStudent.lastName} has been added successfully.`,
+    });
   };
 
   const getDepartmentName = (departmentId: string) => {
@@ -45,7 +67,7 @@ const Students = () => {
           </h1>
           <p className="text-gray-600 mt-1">Manage student records and information</p>
         </div>
-        <Button className="mt-4 sm:mt-0">
+        <Button className="mt-4 sm:mt-0" onClick={() => setShowForm(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Add Student
         </Button>
@@ -133,6 +155,14 @@ const Students = () => {
           <h3 className="text-lg font-medium text-gray-900 mb-2">No students found</h3>
           <p className="text-gray-600">Try adjusting your search criteria</p>
         </div>
+      )}
+
+      {/* Student Form Modal */}
+      {showForm && (
+        <StudentForm
+          onSubmit={handleAddStudent}
+          onCancel={() => setShowForm(false)}
+        />
       )}
     </div>
   );
