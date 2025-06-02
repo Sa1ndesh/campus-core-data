@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Search, Plus, Download, Filter, BookOpen, FileText, Video, Presentation, Headphones, File } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -19,21 +18,21 @@ const StudyMaterials = () => {
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
-    applyFilters(term, selectedDepartment, selectedType);
+    applyFiltersToList(materials, term, selectedDepartment, selectedType);
   };
 
   const handleDepartmentFilter = (deptId: string) => {
     setSelectedDepartment(deptId);
-    applyFilters(searchTerm, deptId, selectedType);
+    applyFiltersToList(materials, searchTerm, deptId, selectedType);
   };
 
   const handleTypeFilter = (type: string) => {
     setSelectedType(type);
-    applyFilters(searchTerm, selectedDepartment, type);
+    applyFiltersToList(materials, searchTerm, selectedDepartment, type);
   };
 
-  const applyFilters = (term: string, deptId: string, type: string) => {
-    let filtered = materials.filter(material =>
+  const applyFiltersToList = (materialsList: StudyMaterial[], term: string, deptId: string, type: string) => {
+    let filtered = materialsList.filter(material =>
       material.title.toLowerCase().includes(term.toLowerCase()) ||
       material.description.toLowerCase().includes(term.toLowerCase()) ||
       material.tags.some(tag => tag.toLowerCase().includes(term.toLowerCase()))
@@ -51,14 +50,21 @@ const StudyMaterials = () => {
   };
 
   const handleAddMaterial = (materialData: Omit<StudyMaterial, 'id'>) => {
+    console.log('Adding new material:', materialData);
+    
     const newMaterial: StudyMaterial = {
       ...materialData,
       id: (materials.length + 1).toString()
     };
     
+    console.log('New material with ID:', newMaterial);
+    
     const updatedMaterials = [...materials, newMaterial];
     setMaterials(updatedMaterials);
-    setFilteredMaterials(updatedMaterials);
+    
+    // Apply current filters to the updated materials list
+    applyFiltersToList(updatedMaterials, searchTerm, selectedDepartment, selectedType);
+    
     setShowForm(false);
     
     toast({
@@ -127,7 +133,10 @@ const StudyMaterials = () => {
           </h1>
           <p className="text-gray-600 mt-1">Access and manage study materials for all departments</p>
         </div>
-        <Button className="mt-4 sm:mt-0" onClick={() => setShowForm(true)}>
+        <Button className="mt-4 sm:mt-0" onClick={() => {
+          console.log('Opening upload form');
+          setShowForm(true);
+        }}>
           <Plus className="h-4 w-4 mr-2" />
           Upload Material
         </Button>
@@ -276,7 +285,10 @@ const StudyMaterials = () => {
       {showForm && (
         <StudyMaterialForm
           onSubmit={handleAddMaterial}
-          onCancel={() => setShowForm(false)}
+          onCancel={() => {
+            console.log('Canceling upload form');
+            setShowForm(false);
+          }}
         />
       )}
     </div>
