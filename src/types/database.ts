@@ -54,3 +54,17 @@ export interface Faculty {
   salary: number;
   officeRoom: string;
 }
+
+export interface StudyMaterial {
+  id: string;
+  title: string;
+  description: string;
+  type: 'PDF' | 'Video' | 'Document' | 'Presentation' | 'Audio' | 'Other';
+  departmentId: string;
+  courseId?: string;
+  uploadedBy: string;
+  uploadDate: string;
+  fileSize: string;
+  downloadCount: number;
+  tags: string[];
+}

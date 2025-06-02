@@ -8,7 +8,8 @@ import {
   UserCheck,
   BarChart3,
   Menu,
-  X
+  X,
+  FileText
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -21,6 +22,7 @@ const Layout = () => {
     { name: 'Courses', href: '/courses', icon: BookOpen },
     { name: 'Faculty', href: '/faculty', icon: UserCheck },
     { name: 'Departments', href: '/departments', icon: Building2 },
+    { name: 'Study Materials', href: '/study-materials', icon: FileText },
   ];
 
   return (

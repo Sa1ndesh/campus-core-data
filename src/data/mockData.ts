@@ -1,5 +1,4 @@
-
-import { Student, Course, Department, Faculty } from '../types/database';
+import { Student, Course, Department, Faculty, StudyMaterial } from '../types/database';
 
 export const departments: Department[] = [
   {
@@ -121,6 +120,60 @@ export const courses: Course[] = [
     enrolledStudents: 32,
     schedule: 'MWF 11:00-12:00 PM',
     prerequisites: ['MATH101']
+  }
+];
+
+export const studyMaterials: StudyMaterial[] = [
+  {
+    id: '1',
+    title: 'Introduction to Programming - Lecture Notes',
+    description: 'Comprehensive lecture notes covering basic programming concepts in Python',
+    type: 'PDF',
+    departmentId: '1',
+    courseId: '1',
+    uploadedBy: '1',
+    uploadDate: '2024-01-15',
+    fileSize: '2.5 MB',
+    downloadCount: 145,
+    tags: ['programming', 'python', 'basics']
+  },
+  {
+    id: '2',
+    title: 'Data Structures Algorithm Visualization',
+    description: 'Interactive video tutorials explaining data structures and algorithms',
+    type: 'Video',
+    departmentId: '1',
+    courseId: '2',
+    uploadedBy: '1',
+    uploadDate: '2024-02-20',
+    fileSize: '150 MB',
+    downloadCount: 98,
+    tags: ['algorithms', 'data-structures', 'visualization']
+  },
+  {
+    id: '3',
+    title: 'Calculus II Formula Reference',
+    description: 'Quick reference guide for integration formulas and techniques',
+    type: 'Document',
+    departmentId: '2',
+    courseId: '3',
+    uploadedBy: '2',
+    uploadDate: '2024-01-10',
+    fileSize: '1.2 MB',
+    downloadCount: 203,
+    tags: ['calculus', 'integration', 'formulas']
+  },
+  {
+    id: '4',
+    title: 'Quantum Physics Presentation',
+    description: 'Detailed presentation on quantum mechanics principles',
+    type: 'Presentation',
+    departmentId: '3',
+    uploadedBy: '3',
+    uploadDate: '2024-03-05',
+    fileSize: '8.7 MB',
+    downloadCount: 67,
+    tags: ['quantum', 'physics', 'mechanics']
   }
 ];
 
