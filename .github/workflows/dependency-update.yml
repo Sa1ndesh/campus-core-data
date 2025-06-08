@@ -1,0 +1,52 @@
+
+name: Dependency Updates
+
+on:
+  schedule:
+    # Run every Monday at 9 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  update-dependencies:
+    name: Update Dependencies
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Use Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18.x'
+        cache: 'npm'
+
+    - name: Install npm-check-updates
+      run: npm install -g npm-check-updates
+
+    - name: Update patch and minor versions
+      run: ncu -u --target minor
+
+    - name: Install updated dependencies
+      run: npm install
+
+    - name: Run tests to ensure nothing broke
+      run: npm test || true
+
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: 'chore: update dependencies (patch and minor versions)'
+        title: 'Automated Dependency Update'
+        body: |
+          This PR updates dependencies to their latest patch and minor versions.
+          
+          🤖 This is an automated PR created by GitHub Actions.
+          
+          Please review the changes and ensure all tests pass before merging.
+        branch: automated/dependency-updates
+        delete-branch: true
